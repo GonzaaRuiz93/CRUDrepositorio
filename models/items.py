@@ -1,5 +1,5 @@
-#from utils.db import db
-from index import db
+from utils.db import db
+
 
 
 class Items(db.Model):

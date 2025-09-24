@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.items import Items
-#from utils.db import db
-from index import db
+from utils.db import db
+
 
 items = Blueprint("items", __name__)
 
