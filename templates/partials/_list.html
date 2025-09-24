@@ -1,0 +1,19 @@
+
+{% for item in items %}
+<div class="card mb-1 text-white bg-dark">
+    <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h5>{{item.nombre}}</h5>
+            <div>
+                <a href="{{ url_for('items.update_item', id=item.id) }}" 
+                class="btn btn-primary btn-sm rounded-0">Modificar</a>
+
+                <a href="{{ url_for('items.delete_item', id=item.id) }}" 
+                class="btn btn-danger btn-sm rounded-0">Eliminar</a>
+            </div>
+        </div>
+        <p>{{item.stock}}</p>
+        <p>{{item.precio}}</p>
+    </div>
+</div>
+{% endfor %}
