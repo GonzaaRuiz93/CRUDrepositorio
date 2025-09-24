@@ -1,9 +1,28 @@
-from app import appcreada
-from utils.db import db
+#from app import crear_app
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from config import DATABASE_URI
+#from utils.db import db
 import config
 import os
 
-app = appcreada
+db = SQLAlchemy()
+
+def crear_app():
+    app = Flask(__name__)
+
+    app.secret_key = "secretkey"
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+    db.init_app(app)
+
+    from routes.items import items
+    app.register_blueprint(items)
+
+    return app
+
+app = crear_app()
 
 if __name__ == "__main__":
     #db.init_app(app)

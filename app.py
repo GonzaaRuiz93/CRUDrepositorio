@@ -18,4 +18,4 @@ def crear_app():
 
     return app
 
-appcreada = crear_app()
+
