@@ -42,7 +42,7 @@ try:
     logger.info("📦 Importando módulos...")
     
     try:
-        from app import crear_app
+        from app import app
         logger.info("✅ app importado exitosamente")
     except Exception as e:
         logger.error(f"❌ Error importando app: {e}")
@@ -74,12 +74,17 @@ try:
         else:
             logger.warning(f"⚠️ {var}: NO configurada")
     
-
-
+    # Verificar si app es válida
+    if app:
+        logger.info(f"✅ App object: {type(app)}")
+        logger.info(f"✅ App name: {app.name}")
+    else:
+        logger.error("❌ App is None!")
+        sys.exit(1)
     
     logger.info("🎯 Configurando base de datos...")
     try:
-        app = crear_app()
+        db.init_app(app)
         logger.info("✅ DB inicializada")
         
         with app.app_context():
@@ -89,14 +94,7 @@ try:
         logger.error(f"❌ Error con base de datos: {e}")
         traceback.print_exc()
         # Continuar sin DB para ver si es el problema
-
-    # Verificar si app es válida
-    if app:
-        logger.info(f"✅ App object: {type(app)}")
-        logger.info(f"✅ App name: {app.name}")
-    else:
-        logger.error("❌ App is None!")
-        sys.exit(1)    
+    
     logger.info("✅ Aplicación configurada exitosamente")
     
 except Exception as e:
