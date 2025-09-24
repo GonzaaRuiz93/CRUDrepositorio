@@ -5,12 +5,28 @@ from utils.db import db
 
 items = Blueprint("items", __name__)
 
-
+"""
 @items.route("/")
 def index():
     items = Items.query.order_by(Items.id.desc()).all()
 
     return render_template('index.html', items=items)
+"""
+
+@items.route('/')
+def index():
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info("🔍 Ejecutando consulta Items...")
+    try:
+        logger.info("📋 Intentando consulta a base de datos...")
+        items = Items.query.order_by(Items.id.desc()).all()
+        logger.info(f"✅ Consulta exitosa: {len(items)} items encontrados")
+        return render_template('index.html', items=items)
+    except Exception as e:
+        logger.error(f"❌ Error en consulta: {e}")
+        raise
 
 @items.route("/new", methods=['POST'])
 def add_item():
