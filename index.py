@@ -1,9 +1,11 @@
-from app import app
+from app import crear_app
+#from app import app
 from utils.db import db
 import config
 import os
 
-db.init_app(app)
+#db.init_app(app)
+app = crear_app()
 
 with app.app_context():
     db.create_all()
