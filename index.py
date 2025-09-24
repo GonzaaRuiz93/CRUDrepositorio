@@ -1,9 +1,9 @@
-from app import crear_app
+from app import appcreada
 from utils.db import db
 import config
 import os
 
-app = crear_app()
+app = appcreada
 
 if __name__ == "__main__":
     #db.init_app(app)

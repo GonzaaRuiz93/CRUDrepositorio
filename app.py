@@ -17,3 +17,5 @@ def crear_app():
     app.register_blueprint(items)
 
     return app
+
+appcreada = crear_app()
