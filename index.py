@@ -3,12 +3,13 @@ from utils.db import db
 import config
 import os
 
+db.init_app(app)
+
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
-    db.init_app(app)
-
-    with app.app_context():
-        db.create_all()
+    
     
     port = int(os.environ.get("PORT", 5000))
     debug_mode = os.environ.get("FLASK_ENV") == "development"
