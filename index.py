@@ -27,59 +27,79 @@ if __name__ == "__main__":
 """
 
 import os
+import logging
 
-def initialize_app():
-    #Inicializar aplicación con orden correcto
+from flask import request
+
+# Configurar logging para producción
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def create_application():
+    #Factory function que funciona tanto en desarrollo como producción
+    logger.info("🏭 Creando aplicación Flask...")
     
-    # OPCIÓN A: Si app.py tiene create_app (factory pattern)
-    try:
-        from app import crear_app
-        print("🏭 Usando factory pattern...")
-        app = crear_app()  # Llamar a la función
-    except ImportError:
-        # OPCIÓN B: Si app.py tiene instancia directa
-        from app import app
-        print("📱 Usando instancia directa...")
+    # Importar factory function
+    from app import crear_app
+    app = crear_app()
     
-    # Verificar que app es una instancia de Flask
-    from flask import Flask
-    if not isinstance(app, Flask):
-        raise TypeError(f"app debe ser una instancia de Flask, pero es: {type(app)}")
-    
-    # Inicializar SQLAlchemy
-    print("🔧 Inicializando SQLAlchemy...")
+    # Importar SQLAlchemy
     from utils.db import db
+    
+    # CRÍTICO: Inicializar SQLAlchemy dentro de application context
+    logger.info("🔧 Inicializando SQLAlchemy...")
     db.init_app(app)
     
-    # Crear tablas
+    # CRÍTICO: Crear tablas dentro de application context
     with app.app_context():
-        print("📋 Creando tablas...")
-        db.create_all()
-        print("✅ Tablas creadas/verificadas")
+        logger.info("📋 Creando/verificando tablas...")
+        try:
+            db.create_all()
+            logger.info("✅ Tablas creadas/verificadas exitosamente")
+        except Exception as e:
+            logger.error(f"❌ Error creando tablas: {e}")
+            # No fallar aquí, dejar que la app trate de funcionar
     
+    # IMPORTANTE: Registrar error handlers para debugging
+    @app.errorhandler(500)
+    def handle_500(e):
+        logger.error(f"Error 500: {str(e)}")
+        return "Error interno del servidor", 500
+    
+    @app.before_request
+    def log_request():
+        logger.info(f"Request: {request.method} {request.url}")
+    
+    logger.info("✅ Aplicación creada exitosamente")
     return app
 
 def run_development():
-    #Función para desarrollo
+    #Función para desarrollo local
     port = int(os.environ.get("PORT", 5000))
     debug_mode = os.environ.get("FLASK_ENV") == "development"
     
-    print(f"🚀 Iniciando servidor en puerto {port}, debug={debug_mode}")
+    logger.info(f"🚀 Iniciando servidor de desarrollo en puerto {port}")
     app.run(
         host="0.0.0.0",
         port=port,
         debug=debug_mode
     )
 
-# CRÍTICO: Inicializar antes de que Gunicorn intente usar la app
-print("🎬 Inicializando aplicación...")
-app = initialize_app()
-print("✅ Aplicación inicializada correctamente")
+# CRÍTICO: Crear la aplicación a nivel de módulo
+# Esto asegura que Gunicorn pueda acceder a 'app'
+logger.info("🎬 Inicializando aplicación para Gunicorn...")
+app = create_application()
+
+# Solo para debugging - verificar que app está disponible
+if app:
+    logger.info(f"✅ App disponible: {app.name}")
+else:
+    logger.error("❌ App es None!")
 
 if __name__ == "__main__":
-    print("🚀 Ejecutando en modo desarrollo...")
+    logger.info("🔧 Ejecutando en modo desarrollo...")
     run_development()
 else:
-    print("🌐 App lista para Gunicorn en producción")
+    logger.info("🌐 Aplicación lista para Gunicorn")
 
     
