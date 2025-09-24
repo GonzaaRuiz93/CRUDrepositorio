@@ -6,7 +6,7 @@ import os
 app = crear_app()
 
 if __name__ == "__main__":
-    db.init_app(app)
+    #db.init_app(app)
     
     with app.app_context():
         db.create_all()
