@@ -39,17 +39,17 @@ import os
 from flask import request
 
 
-#def create_application():
-from app import crear_app
-app = crear_app()
+def iniciar_app():
+    from app import crear_app
+    app = crear_app()
     
-    #from utils.db import db
-    #db.init_app(app)
+    from utils.db import db
+    db.init_app(app)
     
-    #with app.app_context():
-    #    db.create_all()
+    with app.app_context():
+        db.create_all()
 
-    #return app
+    return app
 
 
 #def run_development():
@@ -63,7 +63,7 @@ app = crear_app()
 #    )
 
 
-#app = create_application()
+app = iniciar_app()
 
 if __name__ == "__main__":
     #run_development()

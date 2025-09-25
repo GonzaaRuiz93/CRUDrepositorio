@@ -58,11 +58,11 @@ def crear_app():
     app.register_blueprint(items)
 
     #BORRAR SI NO FUNCIONA
-    from utils.db import db
-    db.init_app(app)
+    #from utils.db import db
+    #db.init_app(app)
     
-    with app.app_context():
-        db.create_all()
+    #with app.app_context():
+    #    db.create_all()
 
     return app
 
