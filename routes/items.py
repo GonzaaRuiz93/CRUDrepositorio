@@ -11,9 +11,6 @@ def index():
     items = Items.query.order_by(Items.id.desc()).all()
     return render_template('index.html', items=items)
 
-
-
-
 @items.route("/new", methods=['POST'])
 def add_item():
     nombre=request.form['nombre']
