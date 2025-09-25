@@ -39,31 +39,31 @@ import os
 from flask import request
 
 
-def create_application():
-    from app import crear_app
-    app = crear_app()
+#def create_application():
+from app import crear_app
+app = crear_app()
     
-    from utils.db import db
-    db.init_app(app)
+    #from utils.db import db
+    #db.init_app(app)
     
-    with app.app_context():
-        db.create_all()
+    #with app.app_context():
+    #    db.create_all()
 
-    return app
+    #return app
 
-"""
-def run_development():
-    port = int(os.environ.get("PORT", 5000))
-    debug_mode = os.environ.get("FLASK_ENV") == "development"
 
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=debug_mode
-    )
-"""
+#def run_development():
+#    port = int(os.environ.get("PORT", 5000))
+#    debug_mode = os.environ.get("FLASK_ENV") == "development"
 
-app = create_application()
+#    app.run(
+#        host="0.0.0.0",
+#        port=port,
+#        debug=debug_mode
+#    )
+
+
+#app = create_application()
 
 if __name__ == "__main__":
     #run_development()

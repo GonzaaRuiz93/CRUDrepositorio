@@ -57,6 +57,13 @@ def crear_app():
     from routes.items import items
     app.register_blueprint(items)
 
+    #BORRAR SI NO FUNCIONA
+    from utils.db import db
+    db.init_app(app)
+    
+    with app.app_context():
+        db.create_all()
+
     return app
 
 #def register_blueprints(app):
