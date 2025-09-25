@@ -35,14 +35,14 @@ app = crear_app
 
 from flask import Flask
 import os
-import logging
+#import logging
 from config import DATABASE_URI
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 def crear_app():
     #Factory function para crear la aplicación Flask
-    logger.info("🏭 Creando instancia de Flask...")
+    #logger.info("🏭 Creando instancia de Flask...")
     
     app = Flask(__name__)
     
@@ -57,28 +57,28 @@ def crear_app():
         'pool_recycle': 300,    # Reciclar conexiones cada 5 minutos
     }
     
-    logger.info(f"📊 Database URL configurada: {app.config['SQLALCHEMY_DATABASE_URI'][:20]}...")
+    #logger.info(f"📊 Database URL configurada: {app.config['SQLALCHEMY_DATABASE_URI'][:20]}...")
     
    
     # Registrar rutas DESPUÉS de crear la app pero ANTES de inicializar DB
     register_blueprints(app)
     
-    logger.info("✅ Aplicación Flask creada")
+    #logger.info("✅ Aplicación Flask creada")
     return app
 
 def register_blueprints(app):
     #Registrar todos los blueprints/rutas
-    try:
+    #try:
         # IMPORTANTE: Importar DENTRO de la función para evitar circular imports
         from routes.items import items
         app.register_blueprint(items)
-        logger.info("✅ Blueprint items registrado")
+        #logger.info("✅ Blueprint items registrado")
         
         # Si tienes más rutas:
         # from routes.users import users_bp
         # app.register_blueprint(users_bp)
         
-    except ImportError as e:
-        logger.error(f"❌ Error importando blueprints: {e}")
-        raise
+    #except ImportError as e:
+        #logger.error(f"❌ Error importando blueprints: {e}")
+        #raise
 
