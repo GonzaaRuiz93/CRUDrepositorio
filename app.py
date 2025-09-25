@@ -1,37 +1,3 @@
-"""
-from flask import Flask
-from config import DATABASE_URI
-
-from utils.db import db
-
-import logging
-logger = logging.getLogger(__name__)
-
-def crear_app():
-    logger.info("🏭 Creando instancia de Flask...")
-    app = Flask(__name__)
-
-    logger.info(f"📊 Configurando URL de base de datos")
-    app.secret_key = "secretkey"
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    logger.info(f"📊 Database URL configurada: {app.config['SQLALCHEMY_DATABASE_URI'][:20]}...")
-#    db.init_app(app)
-
-
-    logger.info("Registrando Blueprint items...")
-    from routes.items import items
-    app.register_blueprint(items)
-    logger.info("✅ Blueprint items registrado")
-
-    logger.info("✅ Aplicación Flask creada, retornando...")
-    return app
-
-app = crear_app
-
-
-"""
-
 
 from flask import Flask
 import os
@@ -51,23 +17,9 @@ def crear_app():
         'pool_recycle': 300,    # Reciclar conexiones cada 5 minutos
     }
 
-    #register_blueprints(app)
-
     #Registrar Blueprint
     from routes.items import items
     app.register_blueprint(items)
 
-    #BORRAR SI NO FUNCIONA
-    #from utils.db import db
-    #db.init_app(app)
-    
-    #with app.app_context():
-    #    db.create_all()
-
     return app
-
-#def register_blueprints(app):
-    #from routes.items import items
-    #app.register_blueprint(items)
-
 
