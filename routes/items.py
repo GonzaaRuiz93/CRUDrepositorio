@@ -1,23 +1,23 @@
-"""from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.items import Items
 from utils.db import db
 
+#importar los logg
+import logging
+logger = logging.getLogger(__name__)
 
 items = Blueprint("items", __name__)
 
 
-@items.route("/")
-def index():
-    items = Items.query.order_by(Items.id.desc()).all()
+#@items.route("/")
+#def index():
+#    items = Items.query.order_by(Items.id.desc()).all()
 
-    return render_template('index.html', items=items)
+#    return render_template('index.html', items=items)
 
 
 @items.route('/')
 def index():
-    import logging
-    logger = logging.getLogger(__name__)
-    
     logger.info("🔍 Ejecutando consulta Items...")
     try:
         logger.info("📋 Intentando consulta a base de datos...")
@@ -27,6 +27,8 @@ def index():
     except Exception as e:
         logger.error(f"❌ Error en consulta: {e}")
         raise
+
+
 
 @items.route("/new", methods=['POST'])
 def add_item():
@@ -124,7 +126,8 @@ def index():
 @items.route('/debug')
 def debug_version():
     return f"""
-    <h1>Debug Info</h1>
+
+"""<h1>Debug Info</h1>
     <p><strong>Timestamp:</strong> {datetime.datetime.now()}</p>
     <p><strong>Archivo:</strong> routes/items.py</p>
     <p><strong>Línea 10:</strong> logger.info("🚨 DEBUGGING: Esta es la NUEVA versión...")</p>
