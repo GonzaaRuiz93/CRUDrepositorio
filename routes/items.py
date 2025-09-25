@@ -93,9 +93,9 @@ import datetime
 
 logger = logging.getLogger(__name__)
 
-items_bp = Blueprint('items', __name__)
+items = Blueprint('items', __name__)
 
-@items_bp.route('/')
+@items.route('/')
 def index():
     # LÍNEA 10: Mensaje de debugging para confirmar versión
     logger.info("🚨 DEBUGGING: Esta es la NUEVA versión del código - " + str(datetime.datetime.now()))
@@ -121,7 +121,7 @@ def index():
         return f"<h1>Error de base de datos</h1><p>{str(e)}</p>", 500
 
 # Ruta adicional para verificar que el código se actualizó
-@items_bp.route('/debug')
+@items.route('/debug')
 def debug_version():
     return f"""
     <h1>Debug Info</h1>
