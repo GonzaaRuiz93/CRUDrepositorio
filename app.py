@@ -36,12 +36,12 @@ def crear_app():
     
     swagger_template = {
         "info": {
-            "title": "CRUD Items API",
-            "description": "API para gestión de inventario de productos. Incluye operaciones CRUD completas.",
+            "title": "CRUD de Items y API",
+            "description": "API para gestión de inventario de productos de una tienda de electronicos. Incluye operaciones CRUD completas.",
             "version": "1.0.0",
             "contact": {
-                "name": "Tu Nombre",
-                "url": "https://github.com/tu-usuario/tu-repo"
+                "name": "Ve el codigo de mi CRUD en GitHub",
+                "url": "https://github.com/GonzaaRuiz93/CRUDrepositorio"
             }
         },
         "schemes": [
