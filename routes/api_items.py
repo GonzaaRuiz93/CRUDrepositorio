@@ -35,11 +35,11 @@ def get_items():
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
 
-"""
+
 # GET /api/items/<id> - Obtener un producto específico
 @api_items.route('/items/<int:id>', methods=['GET'])
 def get_item(id):
-    
+    """
     Obtener un producto específico (JSON)
     ---
     tags:
@@ -54,7 +54,7 @@ def get_item(id):
         description: Producto encontrado
       404:
         description: Producto no encontrado
-    
+    """
     try:
         item = Items.query.get(id)
         if not item:
@@ -71,7 +71,7 @@ def get_item(id):
         }), 200
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
-"""
+
 
 # POST /api/items - Crear nuevo producto
 @api_items.route('/items', methods=['POST'])
