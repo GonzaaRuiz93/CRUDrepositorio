@@ -1,3 +1,4 @@
+"""
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from models.items import Items
 from utils.db import db
@@ -8,8 +9,8 @@ items = Blueprint("items", __name__)
 
 @items.route('/')
 def index():
-
-    """
+"""
+"""
     Obtener lista de productos
     ---
     tags:
@@ -35,14 +36,14 @@ def index():
                 format: float
                 example: 599.99
     """
-
+"""
     items = Items.query.order_by(Items.id.desc()).all()
     return render_template('index.html', items=items)
 
 @items.route("/new", methods=['POST'])
 def add_item():
-
-    """
+"""
+"""
     Crear un nuevo producto
     ---
     tags:
@@ -72,7 +73,7 @@ def add_item():
       400:
         description: Datos inválidos
     """
-
+"""
     nombre=request.form['nombre']
     stock=int(request.form['stock'])
     reemplazar = request.form['precio']
@@ -90,8 +91,8 @@ def add_item():
 
 @items.route("/update/<id>", methods=['POST', 'GET'])
 def update_item(id):
-
-    """
+"""
+"""
     Actualizar un producto existente
     ---
     tags:
@@ -126,7 +127,7 @@ def update_item(id):
       404:
         description: Producto no encontrado
     """
-    
+"""    
     item=Items.query.get(id) #obteniendo ID
 
     if request.method == 'POST':
@@ -145,8 +146,8 @@ def update_item(id):
 
 @items.route("/delete/<id>")
 def delete_item(id):
-
-    """
+"""
+"""
     Eliminar un producto
     ---
     tags:
@@ -164,7 +165,7 @@ def delete_item(id):
       404:
         description: Producto no encontrado
     """
-
+"""
     item=Items.query.get(id) #obteniendo ID
     db.session.delete(item) #borrando producto
     db.session.commit()
@@ -176,8 +177,8 @@ def delete_item(id):
 
 @items.route("/about")
 def about():
-
-    """
+"""
+"""
     Página de información
     ---
     tags:
@@ -186,7 +187,33 @@ def about():
       200:
         description: Página sobre el proyecto
     """
-
+"""
     return render_template('about.html')
 
+"""
 
+from flask import Blueprint, render_template
+from models.items import Items
+
+items = Blueprint("items", __name__)
+
+@items.route('/')
+def index():
+    """
+    Página principal - Formulario + Lista de productos
+    """
+    return render_template('index.html')
+
+@items.route("/update/<id>")
+def update_item(id):
+    """
+    Página con formulario para actualizar producto
+    """
+    return render_template('update.html', item_id=id)
+
+@items.route("/about")
+def about():
+    """
+    Página informativa
+    """
+    return render_template('about.html')

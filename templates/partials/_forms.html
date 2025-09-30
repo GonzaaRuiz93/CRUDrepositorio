@@ -1,3 +1,5 @@
+<!--
+
 <form action="/new" method="POST" class="card bg-dark text-light">
     <div class="card-body p-4">
         <div class="mb-3">
@@ -36,3 +38,113 @@
         <button class="btn btn-primary">Guardar</button>
     </div>   
 </form> 
+
+-->
+
+
+
+
+<form id="formNuevoItem" class="card bg-dark text-light">
+    <div class="card-body p-4">
+        <div class="mb-3">
+            <label for="nombre">Nombre del Producto</label>
+            <input 
+                type="text" 
+                id="nombre"
+                name="nombre" 
+                placeholder="Ej: Placa Madre" 
+                class="form-control rounded-0 bg-light border-0 text-dark" 
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label for="stock">Stock</label>
+            <input 
+                type="number" 
+                id="stock"
+                name="stock" 
+                placeholder="Ej: 20"
+                class="form-control rounded-0 bg-light border-0 text-dark"
+                min="0"
+                required
+            >
+        </div>
+
+        <div class="mb-3">
+            <label for="precio">Precio</label>
+            <input 
+                type="text" 
+                id="precio"
+                name="precio" 
+                placeholder="Ej: 200000.00 o 200000,00"
+                class="form-control rounded-0 bg-light border-0 text-dark"
+                required
+            >
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm d-none" id="btnSpinner"></span>
+            <span id="btnText">Guardar</span>
+        </button>
+    </div>   
+</form>
+
+<script>
+    document.getElementById('formNuevoItem').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Deshabilitar botón y mostrar spinner
+        const btn = e.target.querySelector('button[type="submit"]');
+        const btnText = document.getElementById('btnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        btn.disabled = true;
+        btnSpinner.classList.remove('d-none');
+        btnText.textContent = ' Guardando...';
+        
+        const formData = {
+            nombre: document.getElementById('nombre').value.trim(),
+            stock: parseInt(document.getElementById('stock').value),
+            precio: document.getElementById('precio').value.trim()
+        };
+        
+        // Validación básica
+        if (!formData.nombre || formData.stock < 0 || !formData.precio) {
+            showFlash('Por favor completa todos los campos correctamente', 'danger');
+            btn.disabled = false;
+            btnSpinner.classList.add('d-none');
+            btnText.textContent = 'Guardar';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Guardar mensaje para mostrar en index
+                sessionStorage.setItem('flashMessage', result.message);
+                sessionStorage.setItem('flashType', 'success');
+                window.location.href = '/';
+            } else {
+                showFlash(result.error, 'danger');
+                btn.disabled = false;
+                btnSpinner.classList.add('d-none');
+                btnText.textContent = 'Guardar';
+            }
+            
+        } catch (error) {
+            showFlash('Error al crear producto: ' + error.message, 'danger');
+            btn.disabled = false;
+            btnSpinner.classList.add('d-none');
+            btnText.textContent = 'Guardar';
+        }
+    });
+</script>
