@@ -6,7 +6,6 @@
     <div class="col-md-6">
         
         
-        {% include 'partials/_message.html' %}
         
         <!-- Spinner de carga -->
         <div id="loadingSpinner" class="text-center my-4">
@@ -20,6 +19,9 @@
         <form id="formUpdateItem" class="card bg-dark text-light" style="display: none;">
             <div class="card-body p-4">
                 <h2 class="mb-4 text-light">Actualizar Producto #{{ item_id }}</h2>
+
+                <div id="updateMessages"></div>
+
                 <input type="hidden" id="itemId" value="{{ item_id }}">
                 
                 <div class="mb-3">
@@ -86,30 +88,50 @@
 {% block scripts %}
 <script>
     const itemId = document.getElementById('itemId').value;
-
+    
+    // Función para mostrar mensajes en el formulario de actualización
+    function showUpdateFlash(message, type = 'danger') {
+        const messagesDiv = document.getElementById('updateMessages');
+        messagesDiv.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // Auto-cerrar después de 5 segundos
+        setTimeout(() => {
+            const alert = messagesDiv.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+                setTimeout(() => messagesDiv.innerHTML = '', 150);
+            }
+        }, 3000);
+    }
+    
     // Cargar datos del producto desde la API
     async function loadItem() {
         try {
             const response = await fetch(`/api/items/${itemId}`);
             const result = await response.json();
-            
+           
             if (!result.success) {
                 throw new Error(result.error);
             }
-            
+           
             // Rellenar formulario con los datos
             document.getElementById('nombre').value = result.data.nombre;
             document.getElementById('stock').value = result.data.stock;
             document.getElementById('precio').value = result.data.precio;
-            
+           
             // Ocultar spinner y mostrar formulario
             document.getElementById('loadingSpinner').style.display = 'none';
             document.getElementById('formUpdateItem').style.display = 'block';
-            
+           
         } catch (error) {
             document.getElementById('loadingSpinner').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="bi bi-exclamation-triangle"></i> 
+                    <i class="bi bi-exclamation-triangle"></i>
                     Error al cargar producto: ${error.message}
                     <br><br>
                     <a href="/" class="btn btn-secondary btn-sm">
@@ -119,11 +141,14 @@
             `;
         }
     }
-
+    
     // Actualizar producto con la API
     document.getElementById('formUpdateItem').addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Limpiar mensajes anteriores
+        document.getElementById('updateMessages').innerHTML = '';
+       
         // Deshabilitar botón y mostrar spinner
         const btn = e.target.querySelector('button[type="submit"]');
         const btnText = document.getElementById('btnText');
@@ -131,22 +156,22 @@
         btn.disabled = true;
         btnSpinner.classList.remove('d-none');
         btnText.innerHTML = ' Guardando...';
-        
+       
         const formData = {
             nombre: document.getElementById('nombre').value.trim(),
             stock: parseInt(document.getElementById('stock').value),
             precio: document.getElementById('precio').value.trim()
         };
-        
+       
         // Validación básica
         if (!formData.nombre || formData.stock < 0 || !formData.precio) {
-            showFlash('Por favor completa todos los campos correctamente', 'danger');
+            showUpdateFlash('Por favor completa todos los campos correctamente', 'warning');
             btn.disabled = false;
             btnSpinner.classList.add('d-none');
             btnText.innerHTML = '<i class="bi bi-save"></i> Actualizar';
             return;
         }
-        
+       
         try {
             const response = await fetch(`/api/items/${itemId}`, {
                 method: 'PUT',
@@ -155,29 +180,29 @@
                 },
                 body: JSON.stringify(formData)
             });
-            
+           
             const result = await response.json();
-            
+           
             if (result.success) {
                 // Guardar mensaje para mostrar en index
                 sessionStorage.setItem('flashMessage', result.message);
                 sessionStorage.setItem('flashType', 'success');
                 window.location.href = '/';
             } else {
-                showFlash(result.error, 'danger');
+                showUpdateFlash(result.error, 'danger');
                 btn.disabled = false;
                 btnSpinner.classList.add('d-none');
                 btnText.innerHTML = '<i class="bi bi-save"></i> Actualizar';
             }
-            
+           
         } catch (error) {
-            showFlash('Error al actualizar producto: ' + error.message, 'danger');
+            showUpdateFlash('Error al actualizar producto: ' + error.message, 'danger');
             btn.disabled = false;
             btnSpinner.classList.add('d-none');
             btnText.innerHTML = '<i class="bi bi-save"></i> Actualizar';
         }
     });
-
+    
     // Cargar datos al iniciar la página
     document.addEventListener('DOMContentLoaded', loadItem);
 </script>

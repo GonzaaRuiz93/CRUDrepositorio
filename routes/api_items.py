@@ -73,10 +73,14 @@ def get_item(id):
         return jsonify({"success": False, "error": str(e)}), 500
 
 
-# POST /api/items - Crear nuevo producto
+"""# POST /api/items - Crear nuevo producto
 @api_items.route('/items', methods=['POST'])
 def create_item():
-    """
+    
+
+
+    
+    
     Crear un nuevo producto (JSON)
     ---
     tags:
@@ -103,7 +107,10 @@ def create_item():
         description: Producto creado exitosamente
       400:
         description: Datos inválidos
-    """
+    
+
+
+
     try:
         data = request.get_json()
         
@@ -137,12 +144,12 @@ def create_item():
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
+"""
 
-
-# PUT /api/items/<id> - Actualizar producto
+"""# PUT /api/items/<id> - Actualizar producto
 @api_items.route('/items/<int:id>', methods=['PUT'])
 def update_item(id):
-    """
+    
     Actualizar un producto existente (JSON)
     ---
     tags:
@@ -169,7 +176,7 @@ def update_item(id):
         description: Producto actualizado exitosamente
       404:
         description: Producto no encontrado
-    """
+    
     try:
         item = Items.query.get(id)
         if not item:
@@ -203,7 +210,172 @@ def update_item(id):
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": str(e)}), 500
+"""
 
+@api_items.route('/items', methods=['POST'])
+def create_item():
+    """Crear un nuevo producto (JSON)"""
+    try:
+        data = request.get_json()
+        
+        # Validaciones
+        if not data:
+            return jsonify({
+                "success": False, 
+                "error": "No se recibieron datos. Por favor completa el formulario."
+            }), 400
+        
+        # Validar campos requeridos
+        if not all(k in data for k in ("nombre", "stock", "precio")):
+            return jsonify({
+                "success": False, 
+                "error": "Faltan campos obligatorios: nombre, stock y precio son requeridos."
+            }), 400
+        
+        # Validar nombre no vacío
+        if not data['nombre'] or data['nombre'].strip() == '':
+            return jsonify({
+                "success": False,
+                "error": "El nombre del producto no puede estar vacío."
+            }), 400
+        
+        # Validar y convertir stock
+        try:
+            stock = int(data['stock'])
+            if stock < 0:
+                return jsonify({
+                    "success": False,
+                    "error": "El stock debe ser un número entero positivo (Ej: 10, 20, 50)."
+                }), 400
+        except (ValueError, TypeError):
+            return jsonify({
+                "success": False,
+                "error": "El stock debe ser un número entero. Ingresaste: " + str(data.get('stock'))
+            }), 400
+        
+        # Validar y convertir precio
+        try:
+            precio_str = str(data['precio']).replace(",", ".").replace("$", "").replace("€", "").strip()
+            precio = float(precio_str)
+            if precio <= 0:
+                return jsonify({
+                    "success": False,
+                    "error": "El precio debe ser mayor a cero."
+                }), 400
+        except (ValueError, TypeError):
+            return jsonify({
+                "success": False,
+                "error": "El precio debe ser un número y no incluir ningún signo monetario. Ingresaste: " + str(data.get('precio'))
+            }), 400
+        
+        # Crear producto
+        nuevo_item = Items(
+            nombre=data['nombre'].strip(),
+            stock=stock,
+            precio=precio
+        )
+        
+        db.session.add(nuevo_item)
+        db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "Producto añadido satisfactoriamente",
+            "data": {
+                "id": nuevo_item.id,
+                "nombre": nuevo_item.nombre,
+                "stock": nuevo_item.stock,
+                "precio": float(nuevo_item.precio)
+            }
+        }), 201
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False, 
+            "error": f"Error inesperado en el servidor: {str(e)}"
+        }), 500
+
+@api_items.route('/items/<int:id>', methods=['PUT'])
+def update_item(id):
+    """Actualizar un producto existente (JSON)"""
+    try:
+        item = Items.query.get(id)
+        if not item:
+            return jsonify({
+                "success": False, 
+                "error": "Producto no encontrado. ID: " + str(id)
+            }), 404
+        
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({
+                "success": False,
+                "error": "No se recibieron datos para actualizar."
+            }), 400
+        
+        # Actualizar nombre si viene
+        if 'nombre' in data:
+            if not data['nombre'] or data['nombre'].strip() == '':
+                return jsonify({
+                    "success": False,
+                    "error": "El nombre del producto no puede estar vacío."
+                }), 400
+            item.nombre = data['nombre'].strip()
+        
+        # Actualizar stock si viene
+        if 'stock' in data:
+            try:
+                stock = int(data['stock'])
+                if stock < 0:
+                    return jsonify({
+                        "success": False,
+                        "error": "El stock debe ser un número entero positivo."
+                    }), 400
+                item.stock = stock
+            except (ValueError, TypeError):
+                return jsonify({
+                    "success": False,
+                    "error": "El stock debe ser un número entero válido. Ingresaste: " + str(data.get('stock'))
+                }), 400
+        
+        # Actualizar precio si viene
+        if 'precio' in data:
+            try:
+                precio_str = str(data['precio']).replace(",", ".").replace("$", "").replace("€", "").strip()
+                precio = float(precio_str)
+                if precio <= 0:
+                    return jsonify({
+                        "success": False,
+                        "error": "El precio debe ser mayor a cero."
+                    }), 400
+                item.precio = precio
+            except (ValueError, TypeError):
+                return jsonify({
+                    "success": False,
+                    "error": "El precio debe ser un número y no incluir ningún signo monetario. Ingresaste: " + str(data.get('precio'))
+                }), 400
+        
+        db.session.commit()
+        
+        return jsonify({
+            "success": True,
+            "message": "Producto actualizado satisfactoriamente",
+            "data": {
+                "id": item.id,
+                "nombre": item.nombre,
+                "stock": item.stock,
+                "precio": float(item.precio)
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "success": False,
+            "error": f"Error inesperado: {str(e)}"
+        }), 500
 
 # DELETE /api/items/<id> - Eliminar producto
 @api_items.route('/items/<int:id>', methods=['DELETE'])
