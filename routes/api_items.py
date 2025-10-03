@@ -214,7 +214,87 @@ def update_item(id):
 
 @api_items.route('/items', methods=['POST'])
 def create_item():
-    """Crear un nuevo producto (JSON)"""
+    """
+    Crear un nuevo producto (JSON)
+    ---
+    tags:
+      - API Items
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - nombre
+            - stock
+            - precio
+          properties:
+            nombre:
+              type: string
+              description: Nombre del producto
+              example: "Placa Madre ASUS"
+            stock:
+              type: integer
+              description: Cantidad en inventario
+              example: 15
+              minimum: 0
+            precio:
+              type: number
+              format: float
+              description: Precio del producto (acepta coma o punto, sin símbolos monetarios)
+              example: 5555.50
+    responses:
+      201:
+        description: Producto creado exitosamente
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: true
+            message:
+              type: string
+              example: "Producto añadido satisfactoriamente"
+            data:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                nombre:
+                  type: string
+                  example: "Placa Madre ASUS"
+                stock:
+                  type: integer
+                  example: 15
+                precio:
+                  type: number
+                  example: 5555.50
+      400:
+        description: Datos inválidos o faltantes
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Faltan campos obligatorios: nombre, stock y precio son requeridos."
+      500:
+        description: Error interno del servidor
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Error inesperado en el servidor"
+        """
+
     try:
         data = request.get_json()
 
@@ -298,7 +378,99 @@ def create_item():
 
 @api_items.route('/items/<int:id>', methods=['PUT'])
 def update_item(id):
-    """Actualizar un producto existente (JSON)"""
+    """
+    Actualizar un producto existente (JSON)
+    ---
+    tags:
+      - API Items
+    parameters:
+      - name: id
+        in: path
+        type: integer
+        required: true
+        description: ID del producto a actualizar
+        example: 5
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            nombre:
+              type: string
+              description: Nuevo nombre del producto (opcional)
+              example: "Placa Madre ASUS ROG"
+            stock:
+              type: integer
+              description: Nueva cantidad en inventario (opcional)
+              example: 20
+              minimum: 0
+            precio:
+              type: number
+              format: float
+              description: Nuevo precio del producto (opcional, acepta coma o punto)
+              example: 6500.75
+    responses:
+      200:
+        description: Producto actualizado exitosamente
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: true
+            message:
+              type: string
+              example: "Producto actualizado satisfactoriamente"
+            data:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 5
+                nombre:
+                  type: string
+                  example: "Placa Madre ASUS ROG"
+                stock:
+                  type: integer
+                  example: 20
+                precio:
+                  type: number
+                  example: 6500.75
+      400:
+        description: Datos inválidos
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "El precio debe ser mayor a cero."
+      404:
+        description: Producto no encontrado
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Producto no encontrado. ID: 5"
+      500:
+        description: Error interno del servidor
+        schema:
+          type: object
+          properties:
+            success:
+              type: boolean
+              example: false
+            error:
+              type: string
+              example: "Error inesperado"
+    """
     try:
         item = Items.query.get(id)
         if not item:
