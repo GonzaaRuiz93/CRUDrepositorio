@@ -526,7 +526,7 @@ def update_item(id):
             except (ValueError, TypeError):
                 return jsonify({
                     "success": False,
-                    "error": "El precio debe ser un número y no incluir ningún signo monetario. Ingresaste: " + str(data.get('precio'))
+                    "error": "El precio debe ser un número y no incluir ninguna letra u otro tipo de signo (Ej: 200.00). Ingresaste: " + str(data.get('precio'))
                 }), 400
 
         db.session.commit()
