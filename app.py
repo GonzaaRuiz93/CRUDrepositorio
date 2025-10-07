@@ -67,6 +67,5 @@ def crear_app():
     app.register_blueprint(api_items)  # ← NUEVO
 
 
-
     return app
 
