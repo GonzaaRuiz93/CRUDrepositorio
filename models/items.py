@@ -1,7 +1,6 @@
 from utils.db import db
 
 
-
 class Items(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column (db.String(50))
@@ -12,5 +11,4 @@ class Items(db.Model):
         self.nombre = nombre
         self.stock = stock
         self.precio = precio
-
 

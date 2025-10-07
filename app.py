@@ -53,19 +53,12 @@ def crear_app():
     # Inicializar Swagger
     Swagger(app, config=swagger_config, template=swagger_template)
 
-    #Registrar Blueprint
-    #from routes.items import items
-    #app.register_blueprint(items)
-
-
-
     # Registrar Blueprints
     from routes.items import items
-    from routes.api_items import api_items  # ← NUEVO
+    from routes.api_items import api_items
     
     app.register_blueprint(items)
-    app.register_blueprint(api_items)  # ← NUEVO
-
+    app.register_blueprint(api_items)
 
     return app
 
